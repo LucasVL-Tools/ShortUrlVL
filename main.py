@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 from flask import Flask, request, render_template, redirect
 import os, random, validators
-url_letters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_-"
-domain = "url.lucasvl.nl"
-url_length = 6
-max_link_length = 500
-max_url_length = 64
+from config import url_letters, domain, url_length, max_link_length, max_url_length
+
+# starts the auto-deleter
+n = os.fork()
+if n > 0:
+    print("Auto delete starting...")
+    import auto_delete
+    while True: pass
+else: print("App starting...")
 
 app = Flask(__name__)
 
@@ -13,7 +17,7 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
-@app.route("/link", methods=['POST'])
+@app.route("/output", methods=['POST'])
 def addlink():
     # gets the link that the user inputted, the preferred url, and strips them of any leading or trailing spaces
     link = request.form.get("link").strip()
