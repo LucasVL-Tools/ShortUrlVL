@@ -1,17 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+	<style>
+		main { 
+			background-color: #0c0c0c;
+			opacity: 1;
+			background-image:  linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977);
+			background-size: 22px 39px;
+			background-position: 0 0, 0 0, 11px 19px, 11px 19px, 0 0, 11px 19px;
+		}
+		
+		html, body, main {
+			color: white;
+			font-weight: bold;
+			font-family: monospace;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			margin: 0;
+			display: -webkit-flex;
+  			display: flex;
+  			-webkit-align-items: center;
+  			align-items: center;
+  			-webkit-justify-content: center;
+  			justify-content: center;
+		}
+		.container {
+			padding: 20px;
+			border: 5px solid orange;
+			border-radius: 20px;
+			background-color: #222222;
+		}
+		input {
+			width: 100%;
+			height: 35px;
+			border: 2px solid gray;
+			border-radius: 5px;
+			background-color: #222222;
+			box-sizing: border-box;
+			color: white;
+			transition: 1s;
+		}
+		.submit:hover {
+			background-color: #444444;
+			transition: 1s;
+		}
+	</style>	
 		<title>url.lucasvl.nl</title>
 	</head>
 
 	<main>
-		<h1>Enter a link</h1>
-		<form action="/link" method="post">
-  			<label for="link">Enter link:</label>
-  			<input type="text" id="link" name="link"><br><br>
-			<label for="preferred_url">Enter preferred URL (optional)</label>
-			<input type="text" id="preferred_url" name="preferred_url"><br><br>
-  			<input type="submit" value="Submit">
-		</form>
+		<div class="container">
+			<form action="/link" method="post">
+				<label for="link">Enter link:<br></label>
+  				<input autocomplete="off" type="text" id="link" name="link"><br><br>
+				<label for="preferred_url">Custom short url (optional)<br></label>
+				<input autocomplete="off" type="text" id="preferred_url" name="preferred_url"><br><br>
+				<input class="submit" type="submit" style="font-weight: bold;" value="Shorten!">
+			</form>
+		</div>
 	</main>
 </html>
