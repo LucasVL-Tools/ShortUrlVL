@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 	<style>
-		body { 
+		body {
 			background-color: #0c0c0c;
 			opacity: 1;
 			background-image:  linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977);
@@ -29,11 +29,11 @@
 			padding: 20px;
 			border: 2px solid darkgray;
 			border-radius: 20px;
-			box-shadow: 0px 0px 15px 5px orange;
 			background-color: #222222;
+			box-shadow: 0px 0px 15px 5px orange;
 			margin: auto;
 		}
-		input {
+		.submit, .pass, .link {
 			width: 100%;
 			height: 35px;
 			border: 2px solid gray;
@@ -41,25 +41,48 @@
 			background-color: #222222;
 			box-sizing: border-box;
 			color: white;
-			transition: 1s;
+			transition: 500ms;
 		}
 		.submit:hover {
 			background-color: #444444;
-			transition: 1s;
+			transform: scale(1.05);
+			transition: 500ms;
 		}
-		p { 
-			color: white;
-			font-size: 30px;
+		p {
+			margin-top: 0;
+			color: orange;
 		}
-		a { color: white; }
+		.red {
+			color: red;
+		}
 	</style>	
 		<title>url.lucasvl.nl</title>
 	</head>
 
 	<main>
 		<div class="container">
-			<p id="url"><a href="/l/{{url}}">{{domain}}/l/{{url}}</a></p>
-			<a href="/dash/{{url}}">Dashboard</a>
+			{% autoescape false %}
+				{{access}}
+			{% endautoescape %}
+			<form action="/dash/{{url}}" method="post">
+				<label for="link">Enter password for {{url}}:<br></label>
+  				<input autocomplete="off" type="text" id="pass" class="pass" name="pass"><br><br>
+				<input class="submit" type="submit" style="font-weight: bold;" value="Authenticate">
+				
+				<p><br/>Extra Options (Dangerous)</p>
+				
+				<input type="checkbox" id="delete" name="delete">
+				<label for="delete">Delete URL</label><br/>
+
+				<input type="checkbox" id="rmpass" name="rmpass">
+				<label for="rmpass">Remove password</label><br/>
+
+                                <input type="checkbox" id="rscount" name="rscount">
+				<label for="rscount">Reset counter</label><br/>
+
+				<label for="link">Enter a new link:<br></label>
+                                <input autocomplete="off" type="text" id="link" class="link" name="link">
+			</form>
 		</div>
 	</main>
 </html>
