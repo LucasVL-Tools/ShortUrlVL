@@ -42,13 +42,14 @@
 		.error {
 			color: red;
 		}
-	</style>	
-		<title>url.lucasvl.nl</title>
+	</style>
+		<link rel="icon" type="image/x-icon" href="/static/favi.png">	
+		<title>Dashboard for {{url}}</title>
 	</head>
 
 	<main>
 		<div class="container">
-			<h1>Info for url {{ url }}</h1>
+			<h1>Dashboard for url {{ url }}</h1>
 			<p>Redirects to: {{ link }}</p>
 			<p>Clicks: {{ clicks }}</p>
 			<p>Expires in: {{ expiry }} (resets after every click or edit)</p>

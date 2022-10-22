@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, abort
 import os, random, validators, logging, hashlib, time
 from humanfriendly import format_timespan
 from waitress import serve
-from config import url_letters, domain, url_length, max_link_length, max_url_length, port, delete_interval
+from config import url_letters, domain, url_length, max_link_length, max_url_length, port, delete_interval, title
 
 logging.basicConfig()
 logger = logging.getLogger('waitress')
@@ -23,7 +23,7 @@ print("App started!")
 
 @app.route("/", methods=['GET'])
 def home():
-    return render_template("index.html", expires=format_timespan(delete_interval), domain=domain)
+    return render_template("index.html", expires=format_timespan(delete_interval), domain=domain, title=title)
 
 @app.route("/", methods=['POST'])
 def info():
@@ -71,7 +71,7 @@ def addlink():
             url = preferred_url
 
     if errors:
-        return render_template("errors.html", errors=errors)
+        return render_template("errors.html", errors=errors, title=title)
 
     # if there is no preferred url, randomly generate one
     if not preferred_url:
@@ -87,7 +87,7 @@ def addlink():
     # write url to file
     file = open(f"./urls/{url}", "a")
     file.write(f"{link}\n0\n{passhash}\n")
-    return render_template("output.html", url=url, domain=domain)
+    return render_template("output.html", url=url, domain=domain, title=title)
 
 # redirects user to desired link
 @app.route("/l/<url>", methods=['GET'])
@@ -114,7 +114,7 @@ def loginpage(url):
     file_content = file.readlines()
     # makes sure the url has a password, the hash in the string is the hash for an empty string. if no password is set (empty password), then user is redirected straight to the dashboard
     if file_content[2] != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n":
-        return render_template("login.html", url=url, access="")
+        return render_template("login.html", url=url, access="", title=title)
     else:
         clicks = file_content[1][:-1]
         expiry = format_timespan(delete_interval - (time.time() - os.stat(f"./urls/{url}").st_mtime), max_units=2)
@@ -167,7 +167,7 @@ def dash(url):
         expiry = format_timespan(delete_interval - (time.time() - os.stat(f"./urls/{url}").st_mtime), max_units=2)
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options)
     else: 
-        return render_template("login.html", url=url, access='<p class="red">Access Denied</p>')
+        return render_template("login.html", url=url, access='<p class="red">Access Denied</p>', title=title)
 
 @app.errorhandler(404)
 def page_not_found(e):

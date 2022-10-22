@@ -5,3 +5,4 @@ max_link_length = 500 #maximum length of link to be shortened
 max_url_length = 64 #maximum length of a custom url
 delete_interval = 1 * 24 * 60 * 60 #max age of a url before it deletes itself, in seconds
 port = 8080
+title = "My URL Shortener"
