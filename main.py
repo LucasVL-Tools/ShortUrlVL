@@ -23,7 +23,12 @@ print("App started!")
 
 @app.route("/", methods=['GET'])
 def home():
-    return render_template("index.html", expires=format_timespan(delete_interval))
+    return render_template("index.html", expires=format_timespan(delete_interval), domain=domain)
+
+@app.route("/", methods=['POST'])
+def info():
+    url = request.form.get("lookup").strip()
+    return redirect(f"/dash/{url}", code=302)
 
 @app.route("/output", methods=['POST'])
 def addlink():
@@ -66,7 +71,7 @@ def addlink():
             url = preferred_url
 
     if errors:
-        return(f"Could not shorten url due to the following errors:<ul>{errors}</ul>")
+        return render_template("errors.html", errors=errors)
 
     # if there is no preferred url, randomly generate one
     if not preferred_url:
@@ -117,7 +122,7 @@ def loginpage(url):
 
 # checks if password is correct, and if yes return the dashboard
 @app.route("/dash/<url>", methods=['POST'])
-def info(url):
+def dash(url):
     try: file = open(f"./urls/{url}", "r")
     except: abort(404)
     file_content = file.readlines()
@@ -163,6 +168,10 @@ def info(url):
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options)
     else: 
         return render_template("login.html", url=url, access='<p class="red">Access Denied</p>')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 #app.run(debug = True)
 serve(app, host="0.0.0.0", port=port)

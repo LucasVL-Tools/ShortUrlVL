@@ -52,6 +52,21 @@
 			margin-top: 0;
 			color: orange;
 		}
+		a { 
+			color: blue;
+			text-decoration: underline;
+		}
+		.more {
+			display: none;
+		}
+		#toggle {
+			position: fixed;
+			left: -99999px;
+			top: -99999px;
+		}
+		#toggle:checked ~ .more {
+			display: block;
+		}
 	</style>	
 		<title>url.lucasvl.nl</title>
 	</head>
@@ -67,6 +82,16 @@
 				<label for="pass">Stats password (optional)<br></label>
                                 <input autocomplete="off" type="text" id="pass" name="pass"><br><br>
 				<input class="submit" type="submit" style="font-weight: bold;" value="Shorten!">
+			</form>
+			<br>
+			<label for="toggle"><a>More</a></label>
+			<input type="checkbox" id="toggle">
+			
+			<form action="/" method="post" class="more">
+				<br>
+				<label for="lookup">Dashboard for: {{domain}}/l/<br/></label>
+				<input type="text" id="lookup" name="lookup"><br><br>
+				<input class="submit" type="submit" style="font-weight: bold;" value="Find!">
 			</form>
 		</div>
 	</main>
