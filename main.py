@@ -166,8 +166,11 @@ def dash(url):
                 errors = ""
                 if len(link) >= max_link_length:
                     errors += "<li>Inputted link too long</li>"
-                if validators.url(link) != True:
-                    errors += "<li>Inputted link not valid, make sure it begins with http:// or https://</li>"
+                if validators.url(link) != True and validators.url(f"http://{link}") != True or link == "":
+                    errors += "<li>Inputted link not valid</li>"
+                elif validators.url(f"http://{link}"):
+                    link = f"http://{link}"
+
                 if errors:
                     options += f'<li class="error">could not change link due to following errors: <ul>{errors}</ul></li>'
                 else:
