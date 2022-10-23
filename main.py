@@ -204,5 +204,5 @@ def page_not_found(e):
 if host:
     serve(app, host=host, port=port)
 elif unix_socket:
-    serve(app, unix_socket=unix_socket)
+    serve(app, unix_socket=unix_socket, unix_socket_perms="777")
 else: print("Please specify a host or unix socket")
