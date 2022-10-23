@@ -6,4 +6,6 @@ max_url_length = 64 #maximum length of a custom url
 max_age = 24 #max age of a url before it deletes itself, in hours (decimal values OK)
 default_age = 2 #default age value used if user does not specify
 port = 8080 #port that the server runs on
+host = "0.0.0.0" #address to listen on, recommended to keep this as is, unless you want to use a unix socket, in which case set it to an empty string
+unix_socket = "./socket.sock" #path to the unix socket that you want to use (optional)
 title = "My URL Shortener" #title displayed on browser bar

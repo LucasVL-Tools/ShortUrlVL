@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, abort
 import os, random, validators, logging, hashlib, time
 from humanfriendly import format_timespan
 from waitress import serve
-from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title
+from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title, host, unix_socket
 
 logging.basicConfig()
 logger = logging.getLogger('waitress')
@@ -201,4 +201,8 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 #app.run(debug = True)
-serve(app, host="0.0.0.0", port=port)
+if host:
+    serve(app, host=host, port=port)
+elif unix_socket:
+    serve(app, unix_socket=unix_socket)
+else: print("Please specify a host or unix socket")
