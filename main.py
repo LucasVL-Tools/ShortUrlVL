@@ -41,8 +41,10 @@ def addlink():
     # checks if the inputted link to be shortened is valid, to avoid unecessary processing of broken or outrageously long links
     if len(link) >= max_link_length:
         errors += "<li>Inputted link too long</li>"
-    if validators.url(link) != True or link == "":      
-        errors += "<li>Inputted link not valid, make sure it begins with http:// or https://</li>"
+    if validators.url(link) != True and validators.url(f"http://{link}") != True or link == "":      
+        errors += "<li>Inputted link not valid</li>"
+    elif validators.url(f"http://{link}"):
+        link = f"http://{link}"
 
     # if the user has a preferred url, check if the url they chose meets the guidelines, and then set the url variable to the preferred url
     if preferred_url:
