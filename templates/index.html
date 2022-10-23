@@ -75,7 +75,6 @@
 
 	<main>
 		<div class="container">
-			<p>Expires in {{expires}}</p>
 			<form action="/output" method="post">
 				<label for="link">Enter link:<br></label>
   				<input autocomplete="off" type="text" id="link" name="link"><br><br>
@@ -83,6 +82,8 @@
 				<input autocomplete="off" type="text" id="preferred_url" name="preferred_url"><br><br>
 				<label for="pass">Stats password (optional)<br></label>
                                 <input autocomplete="off" type="password" id="pass" name="pass"><br><br>
+				<label for="expire">Hours until expires (max {{max_age}})<br/></label>
+				<input autocomplete="off" type="number" id="expire" name="expire" min="0" max="{{max_age}}" value="{{default_age}}" step="0.1"><br><br>
 				<input class="submit" type="submit" style="font-weight: bold;" value="Shorten!">
 			</form>
 			<br>

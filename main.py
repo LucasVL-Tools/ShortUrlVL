@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, abort
 import os, random, validators, logging, hashlib, time
 from humanfriendly import format_timespan
 from waitress import serve
-from config import url_letters, domain, url_length, max_link_length, max_url_length, port, delete_interval, title
+from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title
 
 logging.basicConfig()
 logger = logging.getLogger('waitress')
@@ -23,7 +23,7 @@ print("App started!")
 
 @app.route("/", methods=['GET'])
 def home():
-    return render_template("index.html", expires=format_timespan(delete_interval), domain=domain, title=title)
+    return render_template("index.html", max_age=max_age, default_age=default_age, domain=domain, title=title)
 
 @app.route("/", methods=['POST'])
 def info():
@@ -35,6 +35,8 @@ def addlink():
     # gets the link that the user inputted, the preferred url, and strips them of any leading or trailing spaces
     link = request.form.get("link").strip()
     preferred_url = request.form.get("preferred_url").strip()
+    expires = request.form.get("expire")
+    
     passhash = str(hashlib.sha512(bytes(request.form.get("pass"), encoding='utf-8')).hexdigest())
     taken_urls = os.listdir("./urls")
     errors = ""
@@ -72,6 +74,18 @@ def addlink():
         if url_available == True and valid_chars == True and valid_length == True: 
             url = preferred_url
 
+    if expires:
+        try: 
+            expires = float(expires)
+            if expires > 0 and expires <= max_age:
+                valid_expires = True
+                expires = expires * 60 * 60 + time.time()
+            else:
+                errors += f"<li>Hours until expires value must be greater than 0, and less than or equal to {max_age}</li>"
+        except: 
+            errors += "<li>Hours until expires field must be a decimal number</li>"
+    else: errors += "<li>No hours until expiration provided</li>"
+
     if errors:
         return render_template("errors.html", errors=errors, title=title)
 
@@ -88,7 +102,7 @@ def addlink():
 
     # write url to file
     file = open(f"./urls/{url}", "a")
-    file.write(f"{link}\n0\n{passhash}\n")
+    file.write(f"{link}\n0\n{passhash}\n{expires}\n")
     return render_template("output.html", url=url, domain=domain, title=title)
 
 # redirects user to desired link
@@ -116,10 +130,10 @@ def loginpage(url):
     file_content = file.readlines()
     # makes sure the url has a password, the hash in the string is the hash for an empty string. if no password is set (empty password), then user is redirected straight to the dashboard
     if file_content[2] != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n":
-        return render_template("login.html", url=url, access="", title=title)
+        return render_template("login.html", url=url, access="", title=title, max_age=max_age)
     else:
         clicks = file_content[1][:-1]
-        expiry = format_timespan(delete_interval - (time.time() - os.stat(f"./urls/{url}").st_mtime), max_units=2)
+        expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry)
 
 # checks if password is correct, and if yes return the dashboard
@@ -135,8 +149,9 @@ def dash(url):
         rmpass = request.form.get("rmpass")
         rscount = request.form.get("rscount")
         link = request.form.get("link").strip()
+        expire = request.form.get("expire")
         options = ""
-        if delurl or rmpass or rscount or link:
+        if delurl or rmpass or rscount or link or expire:
             file = open(f"./urls/{url}", "w")
             if delurl:
                 os.remove(f"./urls/{url}")
@@ -158,6 +173,16 @@ def dash(url):
                 else:
                     options += f"<li>Changed link from {file_content[0][:-1]} to {link}</li>"
                     file_content[0] = f"{link}\n"
+            if expire:
+                try:
+                    expire = float(expire)
+                    if expire > 0 and expire <= max_age:
+                        expire = expire * 60 * 60 + time.time()
+                        file_content[3] = f"{expire}\n"
+                    else:
+                        errors = f"<li>Hours until expires value must be greater than 0, and less than or equal to {max_age}</li>"
+                except:
+                    errors += "<li>Hours until expires field must be a decimal number</li>"
                 
 
             file.writelines(file_content)
@@ -166,7 +191,7 @@ def dash(url):
 
         if options: options = f"<ul>{options}</ul>"
         clicks = file_content[1][:-1]
-        expiry = format_timespan(delete_interval - (time.time() - os.stat(f"./urls/{url}").st_mtime), max_units=2)
+        expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options)
     else: 
         return render_template("login.html", url=url, access='<p class="red">Access Denied</p>', title=title)

@@ -1,16 +1,18 @@
-import os, time, shutil
-from config import delete_interval
+import os, time
+from config import max_age
 print("Auto delete started!")
+root="./urls"
 
 while True:
-    time.sleep(5)
-    five_days_ago = time.time() - (delete_interval)
-    root = "./urls"
-    
+    time.sleep(25)
     for i in os.listdir(root):
         path = os.path.join(root, i)
-        if os.stat(path).st_mtime <= five_days_ago:
+        file = open(path, "r")
+        expiration = file.readlines()[3][:-1]
+        if int(float(expiration)) <= time.time():
             try:
                 os.remove(path)
+                print("Auto deleted file:", i)
             except:
                 print("Could not remove file:", i)
+
