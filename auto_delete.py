@@ -8,11 +8,14 @@ while True:
     for i in os.listdir(root):
         path = os.path.join(root, i)
         file = open(path, "r")
-        expiration = file.readlines()[3][:-1]
-        if int(float(expiration)) <= time.time():
-            try:
-                os.remove(path)
-                print("Auto deleted file:", i)
-            except:
-                print("Could not remove file:", i)
+        try:
+            expiration = file.readlines()[3][:-1]
+            if int(float(expiration)) <= time.time():
+                try:
+                    os.remove(path)
+                    print("Auto deleted file:", i)
+                except:
+                    print("Could not remove file:", i)
+        except:
+            pass
 
