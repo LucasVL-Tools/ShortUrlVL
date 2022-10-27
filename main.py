@@ -5,44 +5,59 @@ from humanfriendly import format_timespan
 from waitress import serve
 from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title, host, unix_socket
 
+# url = url.lucasvl.nl/somethinghere
+# link = the link the user wants shortened
+# use _ for variable names
+# if it can go in to the config file, put it in to the config file and import the variable above
+# happy developing!
+
+# Logging stuff for the waitress WSGI server
 logging.basicConfig()
 logger = logging.getLogger('waitress')
 logger.setLevel(logging.DEBUG)
 
-# starts the auto-deleter
+# Starts the auto-deleter, done by forking the process and checking if the process is a parent or child. if process is child, run auto delete. if process is parent, run app.
 n = os.fork()
 if n > 0:
-    print("Auto delete starting...")
     import auto_delete
     while True: pass
-else: print("App starting...")
+else: print("App started!")
 
 app = Flask(__name__)
 
-print("App started!")
+##############################
+# LINK CREATION AND HOMEPAGE #
+##############################
 
+# Code for serving home page
 @app.route("/", methods=['GET'])
 def home():
     return render_template("index.html", max_age=max_age, default_age=default_age, domain=domain, title=title)
 
+# Code for URL lookup form on main page
 @app.route("/", methods=['POST'])
 def info():
     url = request.form.get("lookup").strip()
     return redirect(f"/dash/{url}", code=302)
 
+# Code for link shortening. this part is what accepts the form info from the index page and outputs a shortened link
 @app.route("/output", methods=['POST'])
 def addlink():
-    # gets the link that the user inputted, the preferred url, and strips them of any leading or trailing spaces
+    # gets the link that the user inputted, the preferred url, and the expiration date, and strips them of any leading or trailing spaces
     link = request.form.get("link").strip()
     preferred_url = request.form.get("preferred_url").strip()
-    expires = request.form.get("expire")
+    expires = request.form.get("expire").strip()
     
+    # generates a hash of the inputted password
     passhash = str(hashlib.sha512(bytes(request.form.get("pass"), encoding='utf-8')).hexdigest())
+    
+    # run series of tests on user input to determine if it is valid
     taken_urls = os.listdir("./urls")
     errors = ""
-    # checks if the inputted link to be shortened is valid, to avoid unecessary processing of broken or outrageously long links
     if len(link) >= max_link_length:
         errors += "<li>Inputted link too long</li>"
+
+    # since validators module needs an https://, run both with and without adding one, and then use the valid one.
     if validators.url(link) != True and validators.url(f"http://{link}") != True or link == "":      
         errors += "<li>Inputted link not valid</li>"
     elif validators.url(f"http://{link}"):
@@ -73,7 +88,8 @@ def addlink():
         # set url variable to the desired url if all checks pass
         if url_available == True and valid_chars == True and valid_length == True: 
             url = preferred_url
-
+    
+    #make sure an expiration time is provided. if not, return an error. if yes, convert to unix timestamp.
     if expires:
         try: 
             expires = float(expires)
@@ -86,10 +102,11 @@ def addlink():
             errors += "<li>Hours until expires field must be a decimal number</li>"
     else: errors += "<li>No hours until expiration provided</li>"
 
+    # in there are errors with the user input the code stops running here and returns the error page
     if errors:
         return render_template("errors.html", errors=errors, title=title)
 
-    # if there is no preferred url, randomly generate one
+    # if there is no preferred url, randomly generate one and set the url variable mentioned before to the random url
     if not preferred_url:
         while True:
             random_url = ""
@@ -100,19 +117,25 @@ def addlink():
                 break
         url = random_url
 
-    # write url to file
+    # write everything to file and return the shortened url
     file = open(f"./urls/{url}", "a")
     file.write(f"{link}\n0\n{passhash}\n{expires}\n")
     return render_template("output.html", url=url, domain=domain, title=title)
 
-# redirects user to desired link
+#################
+# APP REDIRECTS #
+#################
+
 @app.route("/l/<url>", methods=['GET'])
 def expand_url(url):
+    #try opening the file, if it does not exist return 404 and stop there
     try: file = open(f"./urls/{url}", "r")
     except: abort(404)
+
     file_content = file.readlines()
     link = file_content[0][:-1]
-    # add 1 to the click count of the link
+
+    # add 1 to the click count of the url and then return a redirect to the correct link
     file_content[1] = str(int(file_content[1][:-1]) + 1) + "\n"
     file = open(f"./urls/{url}", "w")
     file.writelines(file_content)
@@ -133,6 +156,7 @@ def loginpage(url):
         return render_template("login.html", url=url, access="", title=title, max_age=max_age)
     else:
         clicks = file_content[1][:-1]
+        # this mess calculates how long until the URL expires. on the off-chance that the auto delete script is late to delete, output 0 using max()
         expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry)
 
@@ -142,8 +166,9 @@ def dash(url):
     try: file = open(f"./urls/{url}", "r")
     except: abort(404)
     file_content = file.readlines()
-    if file_content[2][:-1] == str(hashlib.sha512(bytes(request.form.get("pass"), encoding='utf-8')).hexdigest()):
 
+    # makes a hash of the password submitted and checks it against the stored hash. it it is execute the request
+    if file_content[2][:-1] == str(hashlib.sha512(bytes(request.form.get("pass"), encoding='utf-8')).hexdigest()):
         # checks for any "extra options" and executes them
         delurl = request.form.get("delete")
         rmpass = request.form.get("rmpass")
@@ -151,6 +176,7 @@ def dash(url):
         link = request.form.get("link").strip()
         expire = request.form.get("expire")
         options = ""
+        # this if statement seems useless but it actually ensures against uneccesary latency and disk i/o by skipping opening the file to write
         if delurl or rmpass or rscount or link or expire:
             file = open(f"./urls/{url}", "w")
             if delurl:
@@ -170,7 +196,6 @@ def dash(url):
                     errors += "<li>Inputted link not valid</li>"
                 elif validators.url(f"http://{link}"):
                     link = f"http://{link}"
-
                 if errors:
                     options += f'<li class="error">could not change link due to following errors: <ul>{errors}</ul></li>'
                 else:
@@ -187,25 +212,32 @@ def dash(url):
                 except:
                     errors += "<li>Hours until expires field must be a decimal number</li>"
                 
-
+            # writes changes from the options to the file, and reopen as read for the rest of the process
             file.writelines(file_content)
             file = open(f"./urls/{url}", "r")
             file_content = file.readlines()
 
+        # format the options and render template with info
         if options: options = f"<ul>{options}</ul>"
         clicks = file_content[1][:-1]
         expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
         return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options)
     else: 
+        # if authentication fails, return access denied and send user back to login page
         return render_template("login.html", url=url, access='<p class="red">Access Denied</p>', title=title)
+
+###############
+# ERROR PAGES #
+###############
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+# checks for unix socket or host in config file and runs waitress accordingly. 
 #app.run(debug = True)
 if host:
     serve(app, host=host, port=port)
 elif unix_socket:
     serve(app, unix_socket=unix_socket, unix_socket_perms="777")
-else: print("Please specify a host or unix socket")
+else: print("Please specify a host or unix socket (you probably just want host to be set to 0.0.0.0)")
