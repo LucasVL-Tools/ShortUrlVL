@@ -5,11 +5,11 @@ from humanfriendly import format_timespan
 from waitress import serve
 from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title, host, unix_socket
 
-# url = url.lucasvl.nl/somethinghere
+# url = url.lucasvl.nl/whatever-is-here
 # link = the link the user wants shortened
 # use _ for variable names
 # if it can go in to the config file, put it in to the config file and import the variable above
-# happy developing!
+# happy developing! feel free to open up an issue on my gitea if you have any issues with forking or changing the project
 
 # Logging stuff for the waitress WSGI server
 logging.basicConfig()
@@ -47,6 +47,8 @@ def addlink():
     link = request.form.get("link").strip()
     preferred_url = request.form.get("preferred_url").strip()
     expires = request.form.get("expire").strip()
+    expires_hours = expires
+    reset_on_click = request.form.get("reset_on_click")
     
     # generates a hash of the inputted password
     passhash = str(hashlib.sha512(bytes(request.form.get("pass"), encoding='utf-8')).hexdigest())
@@ -119,7 +121,7 @@ def addlink():
 
     # write everything to file and return the shortened url
     file = open(f"./urls/{url}", "a")
-    file.write(f"{link}\n0\n{passhash}\n{expires}\n")
+    file.write(f"{link}\n0\n{passhash}\n{expires}\n{expires_hours}\n{reset_on_click}\n")
     return render_template("output.html", url=url, domain=domain, title=title)
 
 #################
@@ -137,6 +139,9 @@ def expand_url(url):
 
     # add 1 to the click count of the url and then return a redirect to the correct link
     file_content[1] = str(int(file_content[1][:-1]) + 1) + "\n"
+    expires_hours = float(file_content[4][:-1])
+    if file_content[5] == "on\n":
+        file_content[3] = str(expires_hours * 60 * 60 + time.time()) + "\n"
     file = open(f"./urls/{url}", "w")
     file.writelines(file_content)
     return redirect(link, code=302)
@@ -175,9 +180,10 @@ def dash(url):
         rscount = request.form.get("rscount")
         link = request.form.get("link").strip()
         expire = request.form.get("expire")
+        reset_on_click = request.form.get("reset_on_click")
         options = ""
         # this if statement seems useless but it actually ensures against uneccesary latency and disk i/o by skipping opening the file to write
-        if delurl or rmpass or rscount or link or expire:
+        if delurl or rmpass or rscount or link or expire or reset_on_click:
             file = open(f"./urls/{url}", "w")
             if delurl:
                 os.remove(f"./urls/{url}")
@@ -205,13 +211,18 @@ def dash(url):
                 try:
                     expire = float(expire)
                     if expire > 0 and expire <= max_age:
+                        expire_hours = expire
                         expire = expire * 60 * 60 + time.time()
                         file_content[3] = f"{expire}\n"
+                        file_content[4] = f"{expire_hours}\n"
                     else:
                         errors = f"<li>Hours until expires value must be greater than 0, and less than or equal to {max_age}</li>"
                 except:
                     errors += "<li>Hours until expires field must be a decimal number</li>"
-                
+            if reset_on_click and file_content[5] != "on\n":
+                file_content[5] = "on\n"
+                options += "<li>Auto-delete timer will now reset on every use of URL</li>"
+
             # writes changes from the options to the file, and reopen as read for the rest of the process
             file.writelines(file_content)
             file = open(f"./urls/{url}", "r")

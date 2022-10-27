@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-	<link rel="stylesheet" href="/static/style.css">
-	<style>
-	  input[type=checkbox] {
-	    width: 13px;
-	    height: 13px;
-	  }
-	</style>
+		<link rel="stylesheet" href="/static/style.css">
 		<link rel="icon" type="image/x-icon" href="/static/favi.png">	
 		<title>Login to Access Dashboard</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,12 +23,15 @@
 				<label for="delete">Delete URL</label><br/>
 
 				<input type="checkbox" id="rmpass" name="rmpass">
-				<label for="rmpass">Remove password</label><br/>
+				<label for="rmpass">Remove dash password (Locks Settings!)</label><br/>
 
                                 <input type="checkbox" id="rscount" name="rscount">
-				<label for="rscount">Reset counter</label><br/>
+				<label for="rscount">Reset click counter</label><br/>
+				
+				<input type="checkbox" id="reset_on_click" name="reset_on_click">
+				<label for="reset_on_click">Reset auto-delete timer on URL click</label><br/>
 
-				<label for="link">Enter a new link:<br></label>
+				<label for="link">New link:<br></label>
 				<input autocomplete="off" type="text" id="link" class="link" name="link"><br><br>
 
 				<label for="expire">Hours until expires (max {{max_age}})<br/></label>
