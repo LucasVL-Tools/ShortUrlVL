@@ -3,7 +3,22 @@ from flask import Flask, request, render_template, redirect, abort
 import os, random, validators, logging, hashlib, time
 from humanfriendly import format_timespan
 from waitress import serve
-from config import url_letters, domain, url_length, max_link_length, max_url_length, port, max_age, default_age, title, host, unix_socket
+from config import ( 
+    url_letters, 
+    domain, 
+    url_length, 
+    max_link_length, 
+    max_url_length, 
+    port, 
+    max_age, 
+    default_age, 
+    title, 
+    host, 
+    unix_socket, 
+    captcha_site_key, 
+    captcha_secret_key, 
+    enable_captcha 
+)
 
 # url = url.lucasvl.nl/whatever-is-here
 # link = the link the user wants shortened
@@ -24,6 +39,13 @@ if n > 0:
 else: print("App started!")
 
 app = Flask(__name__)
+app.config.update(
+    XCAPTCHA_SITE_KEY=captcha_site_key,
+    XCAPTCHA_SECRET_KEY=captcha_secret_key
+)
+if enable_captcha:
+    from flask_xcaptcha import XCaptcha
+    xcaptcha = XCaptcha(app=app)
 
 ##############################
 # LINK CREATION AND HOMEPAGE #
@@ -43,6 +65,11 @@ def info():
 # Code for link shortening. this part is what accepts the form info from the index page and outputs a shortened link
 @app.route("/output", methods=['POST'])
 def addlink():
+    # first check if the captcha is correct. if not, show error. if correct, just continue like nothing ever happened (you saw nothing)
+    if enable_captcha:
+        if not xcaptcha.verify():
+            return render_template("errors.html", errors="<li>Captcha Failed, please complete the captcha and try again.</li>", title=title)
+
     # gets the link that the user inputted, the preferred url, and the expiration date, and strips them of any leading or trailing spaces
     link = request.form.get("link").strip()
     preferred_url = request.form.get("preferred_url").strip()
@@ -123,6 +150,7 @@ def addlink():
     file = open(f"./urls/{url}", "a")
     file.write(f"{link}\n0\n{passhash}\n{expires}\n{expires_hours}\n{reset_on_click}\n")
     return render_template("output.html", url=url, domain=domain, title=title)
+
 
 #################
 # APP REDIRECTS #

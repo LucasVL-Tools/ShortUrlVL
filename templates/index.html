@@ -16,10 +16,9 @@
 				<input autocomplete="off" type="text" id="preferred_url" name="preferred_url"><br/><br/>
 				<label for="pass">Stats password (optional)<br/></label>
                                 <input autocomplete="off" type="password" id="pass" name="pass"><br/><br/>
-				<label for="expire">Hours until expires (max {{max_age}})<br/></label>
-				<input autocomplete="off" type="number" id="expire" name="expire" min="0" max="{{max_age}}" value="{{default_age}}" step="0.1"><br/>
-				<input type="checkbox" id="reset_on_click" name="reset_on_click">
-				<label for="reset_on_click">Reset on URL click</label><br/><br/>
+				<label for="expire">Hours until expires (max {{max_age}}) <br/> <input type="checkbox" id="reset_on_click" name="reset_on_click"><label for="reset_on_click">Reset timer on URL click<br/></label></label>
+				<input autocomplete="off" type="number" id="expire" name="expire" min="0" max="{{max_age}}" value="{{default_age}}" step="0.1"><br/><br/>
+				{{ xcaptcha }}
 				<input class="submit" type="submit" style="font-weight: bold;" value="Shorten!">
 			</form>
 			<br>

@@ -9,3 +9,8 @@ port = 8080 # port that the server runs on
 host = "0.0.0.0" # address to listen on, recommended to keep this as is, unless you want to use a unix socket, in which case set it to an empty string
 unix_socket = "./socket.sock" # path to the unix socket that you want to use (optional)
 title = "My URL Shortener" # title displayed on browser bar
+
+# Stuff for ReCaptcha. if you do not want to use ReCaptcha, change enable_captcha to False. otherwise, please replace the debug keys with keys you can generate at https://www.google.com/recaptcha/admin/ (captcha V2 checkbox version)
+enable_captcha = True
+captcha_site_key = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+captcha_secret_key = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe" 
