@@ -7,19 +7,20 @@ body {
 }
 		
 html, body, main {
+	position: absolute;
 	color: white;
 	font-weight: bold;
 	font-family: monospace;
 	width: 100%;
-	min-height: 100vh;
+	min-height: 100%;
 	box-sizing: border-box;
 	margin: 0;
 	display: -webkit-flex;
 	display: flex;
-	-webkit-align-items: center;
+	/*-webkit-align-items: center;
 	align-items: center;
 	-webkit-justify-content: center;
-	justify-content: center;
+	justify-content: center;*/
 	flex-direction: column;
 }
 
@@ -38,9 +39,11 @@ main {
 	width: 80%;
 	max-width: 500px;
 }
+
 footer {
-	margin-top: 20px;
+	margin: 20px auto 0 auto;
 }
+
 input[type=checkbox] {
         width: 13px;
         height: 13px;
