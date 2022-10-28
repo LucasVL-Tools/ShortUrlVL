@@ -40,12 +40,12 @@ else: print("App started!")
 
 app = Flask(__name__)
 app.config.update(
-    XCAPTCHA_SITE_KEY=captcha_site_key,
-    XCAPTCHA_SECRET_KEY=captcha_secret_key
+    XCAPTCHA_SITE_KEY = captcha_site_key,
+    XCAPTCHA_SECRET_KEY = captcha_secret_key
 )
 if enable_captcha:
     from flask_xcaptcha import XCaptcha
-    xcaptcha = XCaptcha(app=app)
+    xcaptcha = XCaptcha(app=app, theme="dark")
 
 ##############################
 # LINK CREATION AND HOMEPAGE #

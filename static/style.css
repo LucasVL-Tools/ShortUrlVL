@@ -4,7 +4,7 @@ body {
 	background-image:  linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(30deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(150deg, #191919 12%, transparent 12.5%, transparent 87%, #191919 87.5%, #191919), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977), linear-gradient(60deg, #19191977 25%, transparent 25.5%, transparent 75%, #19191977 75%, #19191977);
 	background-size: 22px 39px;
 	background-position: 0 0, 0 0, 11px 19px, 11px 19px, 0 0, 11px 19px;
-	padding: 20px
+	padding: 20px;
 }
 		
 html, body, main {
@@ -22,6 +22,7 @@ html, body, main {
 	-webkit-justify-content: center;
 	justify-content: center;
 }
+
 .container {
 	padding: 20px;
 	border: 2px solid darkgray;
@@ -37,7 +38,7 @@ input[type=checkbox] {
         height: 13px;
 }
 
-input, .submit, .pass, .link, .expire {
+input, .submit, .pass, .link, .expire, .reset_on_click {
 	width: 100%;
 	height: 35px;
 	border: 2px solid gray;
@@ -47,6 +48,28 @@ input, .submit, .pass, .link, .expire {
 	color: white;
 	transition: 500ms;
 }
+
+.reset_on_click {
+	margin-top: -2px;
+}
+
+#reset_on_click {
+	width: 31px;
+	height: 31px;
+	border: 2px solid gray;
+	border-radius: 5px;
+	margin: 0px;
+	position: relative;
+	vertical-align: middle;
+}
+
+.reset_label {
+	height: 31px;
+	display: inline-block;
+	position: static;
+	width: calc(100% - 50px);
+}
+
 .submit:hover {
 	background-color: #444444;
 	transform: scale(1.05);
@@ -75,6 +98,10 @@ a {
 	display: block;
 }
 
+#rc-imageselect, .g-recaptcha {
+	margin-top: 20px;
+}
+
 @media screen and (max-width: 400px){ 
 	#rc-imageselect, .g-recaptcha { 
 	transform: scale(0.9); 
@@ -90,4 +117,3 @@ a {
         transform-origin: 0 0;
         -webkit-transform-origin: 0 0;
 }
-
