@@ -274,7 +274,7 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 # checks for unix socket or host in config file and runs waitress accordingly. 
-
+"""
 from werkzeug.middleware.profiler import ProfilerMiddleware
 app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[5], profile_dir="./profile")
 app.run(debug = True)
@@ -284,4 +284,3 @@ if host:
 elif unix_socket:
     serve(app, unix_socket=unix_socket, unix_socket_perms="777")
 else: print("Please specify a host or unix socket (you probably just want host to be set to 0.0.0.0)")
-"""

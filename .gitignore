@@ -4,5 +4,8 @@ __pycache__/
 # Urls folder for my project
 urls/*
 
+# Used by the profiler for debugging
+profiles/
+
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/
