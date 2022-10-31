@@ -61,24 +61,26 @@ input, .submit, .pass, .link, .expire, .reset_on_click {
 }
 
 .reset_on_click {
+	/* height: 20px; */
+	height: auto;
 	margin-top: -2px;
 }
 
 #reset_on_click {
-	width: 31px;
-	height: 31px;
+	width: 16px;
+	height: 16px;
 	border: 2px solid gray;
 	border-radius: 5px;
-	margin: 0px;
+	margin: 2px;
 	position: relative;
 	vertical-align: middle;
 }
 
 .reset_label {
-	height: 31px;
+	height: 20px;
 	display: inline-block;
 	position: static;
-	width: calc(100% - 50px);
+	width: calc(100% - 28px);
 }
 
 .submit:hover {
@@ -91,7 +93,7 @@ p {
 	color: orange;
 }
 a { 
-	color: blue;
+	color: white;
 	text-decoration: underline;
 }
 .red {
