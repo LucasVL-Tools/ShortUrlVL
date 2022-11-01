@@ -88,7 +88,7 @@ input, .submit, .pass, .link, .expire, .reset_on_click {
 	transform: scale(1.05);
 	transition: 500ms;
 }
-p {
+p, .orange {
 	margin-top: 0;
 	color: orange;
 }

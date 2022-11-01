@@ -4,8 +4,11 @@
 	<link rel="stylesheet" href="/static/style.css">
 	<style>
 		.container {
-			width: 53ch;
+			max-width: 53ch;
+		}
+		.url {
 			word-break: break-all;
+			display: inline;
 		}
 		.error {
 			color: red;
@@ -18,7 +21,7 @@
 
 	<main>
 		<div class="container">
-			<h1>Dashboard for url {{ url }}</h1>
+			<h1>Dashboard for url<div class="url"> {{ url }}</div></h1>
 			<p>Redirects to: <a href="{{link}}">{{ link }}</a></p>
 			<p>Clicks: {{ clicks }}</p>
 			<p>Expires in: {{ expiry }}</p>
