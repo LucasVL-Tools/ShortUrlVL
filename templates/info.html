@@ -5,9 +5,7 @@
 	<style>
 		.container {
 			max-width: 53ch;
-		}
-		.url {
-			word-break: break-all;
+			word-break: break-word;
 			display: inline;
 		}
 		.error {
@@ -21,7 +19,7 @@
 
 	<main>
 		<div class="container">
-			<h1>Dashboard for url<div class="url"> {{ url }}</div></h1>
+			<h1>Dashboard for url {{ url }}</h1>
 			<p>Redirects to: <a href="{{link}}">{{ link }}</a></p>
 			<p>Clicks: {{ clicks }}</p>
 			<p>Expires in: {{ expiry }}</p>
