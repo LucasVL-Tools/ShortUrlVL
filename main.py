@@ -68,7 +68,7 @@ def addlink():
     # first check if the captcha is correct. if not, show error. if correct, just continue like nothing ever happened (you saw nothing)
     if enable_captcha:
         if not xcaptcha.verify():
-            return render_template("errors.html", errors="<li>Captcha Failed, please complete the captcha and try again.</li>", title=title)
+            return render_template("errors.html", errors="<li>Captcha Failed, please complete the captcha and try again.</li>", title=title, domain=domain)
 
     # gets the link that the user inputted, the preferred url, and the expiration date, and strips them of any leading or trailing spaces
     link = request.form.get("link").strip()
@@ -133,7 +133,7 @@ def addlink():
 
     # in there are errors with the user input the code stops running here and returns the error page
     if errors:
-        return render_template("errors.html", errors=errors, title=title)
+        return render_template("errors.html", errors=errors, title=title, domain=domain)
 
     # if there is no preferred url, randomly generate one and set the url variable mentioned before to the random url
     if not preferred_url:
@@ -188,12 +188,12 @@ def loginpage(url):
     if file_content[2] != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n":
         if len(url) >= 25:
             url = f"{url[:22]}..."
-        return render_template("login.html", url=url, access="", title=title, max_age=max_age)
+        return render_template("login.html", url=url, access="", title=title, max_age=max_age, domain=domain)
     else:
         clicks = file_content[1][:-1]
         # this mess calculates how long until the URL expires. on the off-chance that the auto delete script is late to delete, output 0 using max()
         expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
-        return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry)
+        return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, domain=domain)
 
 # checks if password is correct, and if yes return the dashboard
 @app.route("/dash/<url>", methods=['POST'])
@@ -262,10 +262,10 @@ def dash(url):
         if options: options = f"<ul>{options}</ul>"
         clicks = file_content[1][:-1]
         expiry = format_timespan(max(int(float(file_content[3][:-1])) - int(time.time()), 0), max_units=2)
-        return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options)
+        return render_template("info.html", url=url, link=file_content[0][:-1], clicks=clicks, expiry=expiry, options=options, domain=domain)
     else: 
         # if authentication fails, return access denied and send user back to login page
-        return render_template("login.html", url=url, access='<p class="red">Access Denied</p>', title=title)
+        return render_template("login.html", url=url, access='<p class="red">Access Denied</p>', title=title, domain=domain)
 
 ###############
 # ERROR PAGES #
@@ -273,7 +273,7 @@ def dash(url):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('404.html', domain=domain, title="404 - page not found"), 404
 
 # checks for unix socket or host in config file and runs waitress accordingly. 
 """

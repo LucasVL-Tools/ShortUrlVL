@@ -26,7 +26,7 @@
 	<main>
 		<div class="container">
 			<h1>Dashboard for url {{ url }}</h1>
-			<p>Redirects to: <a href="{{link}}">{{ link }}</a></p>
+			<p>Redirects to: <a href="{{link}}" target="_blank">{{ link }}</a></p>
 			<p>Clicks: {{ clicks }}</p>
 			<p>Expires in: {{ expiry }}</p>
 			{% autoescape false %}
@@ -34,7 +34,7 @@
 			{% endautoescape %}
 		</div>
 		<footer>
-                        <p>Made by <a href="https://lucasvl.nl/">LucasVL</a></p>
+                        <p>Made by <a href="https://lucasvl.nl/" target="_blank">LucasVL</a></p>
                 </footer>
 	</main>
 </html>
